@@ -33,7 +33,6 @@ def ollama_cloud_chat(model, messages):
 def download_kokoro_models():
     model_dir = "/tmp/kokoro"
     os.makedirs(model_dir, exist_ok=True)
-    os.chdir(model_dir)
     
     if not os.path.exists("voices-v1.0.bin"):
         subprocess.run("wget https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/voices-v1.0.bin", shell=True, check=True)
@@ -45,13 +44,6 @@ def download_kokoro_models():
 
 
 model_path, voices_path = download_kokoro_models()
-print('DEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUG')
-print('DEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUG')
-print('DEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUG')
-print('DEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUG')
-print('DEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUG')
-print('DEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUG')
-print('DEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUGDEBUG')
 print(os.listdir())
 
 class PodcastGenerator:
