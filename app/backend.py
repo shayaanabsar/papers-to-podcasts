@@ -31,27 +31,25 @@ def ollama_cloud_chat(model, messages):
 
 @st.cache_resource
 def download_kokoro_models():
-    model_dir = "/tmp/kokoro"
-    os.makedirs(model_dir, exist_ok=True)
-    
-    voices_path = f"{model_dir}/voices-v1.0.bin"
-    model_path = f"{model_dir}/kokoro-v1.0.onnx"
-    
-    if not os.path.exists(voices_path):
-        st.write("Downloading voices...")
-        urllib.request.urlretrieve(
-            "https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/voices-v1.0.bin",
-            voices_path
-        )
-    
-    if not os.path.exists(model_path):
-        st.write("Downloading model...")
-        urllib.request.urlretrieve(
-            "https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/kokoro-v1.0.onnx",
-            model_path
-        )
-    
-    return model_path, voices_path
+	model_dir = "/tmp/kokoro"
+	os.makedirs(model_dir, exist_ok=True)
+	
+	voices_path = f"{model_dir}/voices-v1.0.bin"
+	model_path = f"{model_dir}/kokoro-v1.0.onnx"
+	
+	if not os.path.exists(voices_path):
+		urllib.request.urlretrieve(
+			"https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/voices-v1.0.bin",
+			voices_path
+		)
+	
+	if not os.path.exists(model_path):
+		urllib.request.urlretrieve(
+			"https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/kokoro-v1.0.onnx",
+			model_path
+		)
+	
+	return model_path, voices_path
 
 
 model_path, voices_path = download_kokoro_models()
