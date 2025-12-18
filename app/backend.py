@@ -11,21 +11,48 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 import re
 import requests
 import streamlit as st
+import os
+import urllib
 
 
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def ollama_cloud_chat(model, messages):
-    response = requests.post(
-        "https://ollama.com/api/chat",
-        headers={"Authorization": f"Bearer {st.secrets['OLLAMA_API_KEY']}"},
-        json={
-            "model": model,
-            "messages": messages,
+	response = requests.post(
+		"https://ollama.com/api/chat",
+		headers={"Authorization": f"Bearer {st.secrets['OLLAMA_API_KEY']}"},
+		json={
+			"model": model,
+			"messages": messages,
 			"stream": False
-        }
-    )
-    return response.json()
+		}
+	)
+	return response.json()
+
+@st.cache_resource
+def download_kokoro_models():
+    model_dir = "/tmp/kokoro"
+    os.makedirs(model_dir, exist_ok=True)
+    
+    model_url = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx.tar.gz"
+    voices_url = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
+    
+    model_path = f"{model_dir}/kokoro-v1.0.onnx"
+    voices_path = f"{model_dir}/voices-v1.0.bin"
+    
+    # Download and extract model
+    if not os.path.exists(model_path):
+        urllib.request.urlretrieve(model_url, f"{model_dir}/model.tar.gz")
+        import tarfile
+        with tarfile.open(f"{model_dir}/model.tar.gz") as tar:
+            tar.extractall(model_dir)
+    
+    if not os.path.exists(voices_path):
+        urllib.request.urlretrieve(voices_url, voices_path)
+
+    return model_path, voices_path
+
+model_path, voices_path = download_kokoro_models()
 
 class PodcastGenerator:
 	def __init__(self, file):
@@ -196,7 +223,7 @@ class PodcastGenerator:
 				'text': text
 			})
 
-		kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
+		kokoro = Kokoro(model_path, voices_path)
 		audio = []
 
 		for sentence in formatted_sentences:
