@@ -21,7 +21,8 @@ def ollama_cloud_chat(model, messages):
         headers={"Authorization": f"Bearer {st.secrets['OLLAMA_API_KEY']}"},
         json={
             "model": model,
-            "messages": messages
+            "messages": messages,
+			"stream": False
         }
     )
     return response.json()
