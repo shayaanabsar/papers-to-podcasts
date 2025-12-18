@@ -17,7 +17,7 @@ embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def ollama_cloud_chat(model, messages):
     response = requests.post(
-        "https://api.ollama.com/api/chat",
+        "https://ollama.com/api/chat",
         headers={"Authorization": f"Bearer {st.secrets['OLLAMA_API_KEY']}"},
         json={
             "model": model,
