@@ -9,8 +9,22 @@ import faiss
 from sentence_transformers import SentenceTransformer
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import re
+import requests
+import streamlit as st
+
 
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+
+def ollama_cloud_chat(model, messages):
+    response = requests.post(
+        "https://api.ollama.com/api/chat",
+        headers={"Authorization": f"Bearer {st.secrets['OLLAMA_API_KEY']}"},
+        json={
+            "model": model,
+            "messages": messages
+        }
+    )
+    return response.json()
 
 class PodcastGenerator:
 	def __init__(self, file):
@@ -75,7 +89,7 @@ class PodcastGenerator:
 			}
 		]
 
-		response  = chat(model='gpt-oss:120b-cloud', messages=messages) 
+		response  = ollama_cloud_chat(model='gpt-oss:120b-cloud', messages=messages) 
 		questions = response['message']['content']
 
 		questions = list(filter(lambda x: x != '', questions.split('\n')))
@@ -118,7 +132,7 @@ class PodcastGenerator:
 			'content': prompt
 		}]
 
-		response = chat(model='gpt-oss:120b-cloud', messages=messages)
+		response = ollama_cloud_chat(model='gpt-oss:120b-cloud', messages=messages)
 		self.answers = response['message']['content']
 
 	def write_script(self):
@@ -159,7 +173,7 @@ class PodcastGenerator:
 			
 			}]
 		
-		response = chat(model='gpt-oss:120b-cloud', messages=messages)
+		response = ollama_cloud_chat(model='gpt-oss:120b-cloud', messages=messages)
 		self.script = response['message']['content']
 	
 	def generate_audio(self):
