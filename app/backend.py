@@ -12,7 +12,7 @@ import re
 import requests
 import streamlit as st
 import os
-import subprocess
+import urllib.request
 
 
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -34,17 +34,27 @@ def download_kokoro_models():
     model_dir = "/tmp/kokoro"
     os.makedirs(model_dir, exist_ok=True)
     
-    if not os.path.exists("voices-v1.0.bin"):
-        subprocess.run("wget https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/voices-v1.0.bin", shell=True, check=True)
+    voices_path = f"{model_dir}/voices-v1.0.bin"
+    model_path = f"{model_dir}/kokoro-v1.0.onnx"
     
-    if not os.path.exists("kokoro-v1.0.onnx"):
-        subprocess.run("wget https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/kokoro-v1.0.onnx", shell=True, check=True)
+    if not os.path.exists(voices_path):
+        st.write("Downloading voices...")
+        urllib.request.urlretrieve(
+            "https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/voices-v1.0.bin",
+            voices_path
+        )
     
-    return f"{model_dir}/kokoro-v1.0.onnx", f"{model_dir}/voices-v1.0.bin"
+    if not os.path.exists(model_path):
+        st.write("Downloading model...")
+        urllib.request.urlretrieve(
+            "https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/kokoro-v1.0.onnx",
+            model_path
+        )
+    
+    return model_path, voices_path
 
 
 model_path, voices_path = download_kokoro_models()
-print(os.listdir())
 
 class PodcastGenerator:
 	def __init__(self, file):
