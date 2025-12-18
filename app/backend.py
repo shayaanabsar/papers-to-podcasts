@@ -12,7 +12,7 @@ import re
 import requests
 import streamlit as st
 import os
-import urllib
+import subprocess
 
 
 embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -33,24 +33,16 @@ def ollama_cloud_chat(model, messages):
 def download_kokoro_models():
     model_dir = "/tmp/kokoro"
     os.makedirs(model_dir, exist_ok=True)
+    os.chdir(model_dir)
     
-    model_url = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx.tar.gz"
-    voices_url = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
+    if not os.path.exists("voices-v1.0.bin"):
+        subprocess.run("wget https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/voices-v1.0.bin", shell=True, check=True)
     
-    model_path = f"{model_dir}/kokoro-v1.0.onnx"
-    voices_path = f"{model_dir}/voices-v1.0.bin"
+    if not os.path.exists("kokoro-v1.0.onnx"):
+        subprocess.run("wget https://github.com/nazdridoy/kokoro-tts/releases/download/v1.0.0/kokoro-v1.0.onnx", shell=True, check=True)
     
-    # Download and extract model
-    if not os.path.exists(model_path):
-        urllib.request.urlretrieve(model_url, f"{model_dir}/model.tar.gz")
-        import tarfile
-        with tarfile.open(f"{model_dir}/model.tar.gz") as tar:
-            tar.extractall(model_dir)
-    
-    if not os.path.exists(voices_path):
-        urllib.request.urlretrieve(voices_url, voices_path)
+    return f"{model_dir}/kokoro-v1.0.onnx", f"{model_dir}/voices-v1.0.bin"
 
-    return model_path, voices_path
 
 model_path, voices_path = download_kokoro_models()
 
